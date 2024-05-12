@@ -1,7 +1,8 @@
 # Start-Django-Postgres-Docker-Project
-GIT INIT
 
-After creating the GIT project, this should be the folder structure:
+## GIT INIT
+
+After creating the GIT project, this should have this folder structure:
 ```bash
 ProjectRoot
 │   .gitattributes
@@ -16,7 +17,7 @@ STEP BY STEP TO CREATE THE DJANDO PROJECT
 # Create a python virtual environment
 $ python3 -m venv env
 
-# Activate virutal environment
+# Activate virtual environment
 source env/bin/activate
 
 # update pip before installing packages
@@ -72,7 +73,7 @@ import os
 
 load_dotenv()
 ```
-There are some variables in the `settings.py` file we need to secretly save, change the ones below for an environment variables (we will set in a moment):
+There are some variables in the `settings.py` file we need to secretly save, change the ones below for an environment variables (we will add the variables in a moment):
 ```bash
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("DJANGO_SETTINGS_SECRET_KEY")
@@ -98,7 +99,7 @@ We need some environment variables now, lets create a new file using:
 (env) $ touch .env
 ```
 And open the file, this way we can add the next variables:
-```bash
+```text
 # Django settings
 DJANGO_SETTINGS_SECRET_KEY=Password1234!
 DJANGO_SETTINGS_DEBUG=True
@@ -120,7 +121,8 @@ It's time to deactivate the virtual environment and run the local server for the
 (env) $ deactivate
 # now run the local server
 $ python3 manage.py runserver 0.0.0.0:8000
-
+```
+```text
 # output
 Watching for file changes with StatReloader
 Performing system checks...
@@ -137,12 +139,13 @@ Quit the server with CONTROL-C.
 ```
 In your browser, visit `http://localhost:8000`
 To stop the local server `ctrl + c`
-USING DOCKER
+
+## USING DOCKER
 Maker sure you have Docker and Docker Desktop installed locally, if you have it already, you need to run the next piece of code and follow instructions:
 ```bash
 $ docker init
 ```
-```bash
+```text
 # output
 Welcome to the Docker Init CLI!
 
@@ -167,7 +170,7 @@ This utility will walk you through creating the following files with sensible de
   Quit
 ```
 Using arrox up and down, select Python (detected) and answer the questions displayed:
-```bash
+```text
 # output
 Welcome to the Docker Init CLI!
 
@@ -200,8 +203,8 @@ Your application will be available at http://localhost:8000
 Consult README.Docker.md for more information about using the generated files.
 ```
 Folder structure should now looks like:
-```bash
-Project Root
+```text
+ProjectRoot
 ├── env
 ├── playground
     ├── __init__.py
@@ -223,7 +226,7 @@ Project Root
 └── requirements.txt
 ```
 I have my own `Dockerfile` and `compose.yaml` file already tunned and my suggestion is to use this one because is already tested, so let's change the `Dockerfile` with this:
-```bash
+```text
 # syntax=docker/dockerfile:1.4
 
 ARG PYTHON_VERSION=3.11.6
@@ -261,7 +264,7 @@ COPY --from=gloursdocker/docker / /
 CMD ["manage.py", "runserver", "0.0.0.0:8000"]
 ```
 And `compose.yaml` file:
-```bash
+```text
 services:
   app:
     container_name: app
@@ -298,7 +301,7 @@ volumes:
   db-data:
 ```
 
-If you notice, the `compose.yaml` file has to services, the one for the Django application and the one for the Database, we are not gonna use `sqlite.db`!
+If you notice, the `compose.yaml` file has two services, the one for the Django application and another one for the Database, we are not gonna use `sqlite.db`!
 
 Before building the containers, let's add this env vars into `.env`:
 ```bash
@@ -347,6 +350,8 @@ Go to [localhost](http://0.0.0.0:8000/) and you will see django page.
 At this point, we have a default `postgres` db but we need to create our database user and Django database, for that to happen we need to open a shell from postgres container, to do that run:
 ```bash
 $ docker exec -it postgres bash
+```
+```text
 # output
 postgres@e6b2ecb3fdba:/$ 
 ```
@@ -354,29 +359,27 @@ Now that we are inside the postgres container, lets connect to our database and 
 ```bash
 postgres@e6b2ecb3fdba:/$ psql -U postgres
 
-postgres=# CREATE DATABASE django_db;
+postgres=$ CREATE DATABASE django_db;
 # CREATE DATABASE
-postgres=# CREATE USER django_user WITH PASSWORD 'django_password';
+postgres=$ CREATE USER django_user WITH PASSWORD 'django_password';
 # CREATE ROLE
-postgres=# ALTER ROLE django_user SET client_encoding TO 'utf8';
+postgres=$ ALTER ROLE django_user SET client_encoding TO 'utf8';
 # ALTER ROLE
-postgres=# ALTER ROLE django_user SET default_transaction_isolation TO 'read committed';
+postgres=$ ALTER ROLE django_user SET default_transaction_isolation TO 'read committed';
 # ALTER ROLE
-postgres=# ALTER ROLE django_user SET timezone TO 'UTC';
+postgres=$ ALTER ROLE django_user SET timezone TO 'UTC';
 # ALTER ROLE
-postgres=# GRANT ALL PRIVILEGES ON DATABASE django_db TO django_user;
+postgres=$ GRANT ALL PRIVILEGES ON DATABASE django_db TO django_user;
 # GRANT
-postgres=# ALTER DATABASE django_db OWNER TO django_user;
+postgres=$ ALTER DATABASE django_db OWNER TO django_user;
 # ALTER DATABASE
 
-postgres=# \q
+postgres=$ \q
 postgres@17847735cf74:/$ exit
 ```
 Now that we have the database for the Django application, we can update `playground/settings.py`
-```bash
-Then open `playground/settings.py` and update the DATABASES object:
-```bash
-# comment out
+```text
+# comment this object
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
