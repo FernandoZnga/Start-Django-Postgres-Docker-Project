@@ -31,7 +31,6 @@ DEBUG = bool(os.environ.get("DJANGO_SETTINGS_DEBUG"))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_SETTINGS_ALLOWED_HOSTS").split(" ")
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -77,10 +76,23 @@ WSGI_APPLICATION = 'playground.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASS"),
+        "HOST": os.environ.get("DB_HOST"),
+        "PORT": os.environ.get("DB_PORT"),
+        "TEST": {
+            "NAME": os.environ.get("TEST_DB_NAME"),
+        }
     }
 }
 
@@ -109,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Tegucigalpa'
 
 USE_I18N = True
 
